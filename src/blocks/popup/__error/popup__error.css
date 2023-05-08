@@ -8,10 +8,5 @@
   font-size: 12px;
   line-height: 15px;
   text-align: left;
-  color: #ffffff;
-}
-
-
-.popup__error_visible {
   color: #ff0000;
-}
+};
