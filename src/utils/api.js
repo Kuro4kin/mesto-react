@@ -82,8 +82,16 @@ class Api {
     });
   }
 
-  likeThisCard(card) {
-    return fetch(`${this._config.cards}/${card.cardID}/likes`, {
+  changeLikeCardStatus(cardId, isLiked) {
+    if (isLiked) {
+      return this._likeThisCard(cardId)
+    } else {
+      return this._unlikeThisCard(cardId)
+    }
+  }
+
+  _likeThisCard(cardId) {
+    return fetch(`${this._config.cards}/${cardId}/likes`, {
       method: "PUT",
       headers: {
         authorization: this._config.authorization,
@@ -94,8 +102,8 @@ class Api {
     });
   }
 
-  unlikeThisCard(card) {
-    return fetch(`${this._config.cards}/${card.cardID}/likes`, {
+  _unlikeThisCard(cardId) {
+    return fetch(`${this._config.cards}/${cardId}/likes`, {
       method: "DELETE",
       headers: {
         authorization: this._config.authorization,
@@ -107,7 +115,7 @@ class Api {
   }
 
   removeThisCard(card) {
-    return fetch(`${this._config.cards}/${card.cardID}`, {
+    return fetch(`${this._config.cards}/${card._id}`, {
       method: "DELETE",
       headers: {
         authorization: this._config.authorization,
