@@ -11,7 +11,6 @@ function EditAvatarPopup(props) {
       avatar: inputRef.current.value,
     });
     inputRef.current.value = "";
-    props.onClose();
   }
 
   return (

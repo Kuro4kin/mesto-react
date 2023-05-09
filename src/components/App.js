@@ -17,33 +17,32 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false);
   const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({});
   const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
-    Promise.all([api.getInitialUserInfo(), api.getInitialCards()])
-      .then(([userInfo, cardsInfo]) => {
-        setCurrentUser(userInfo);
+    Promise.all([api.getInitialUserInfo(), api.getInitialCards()]).then(([userInfo, cardsInfo]) => {
+      setCurrentUser(userInfo);
 
-        const results = cardsInfo.map((item) => ({
-          key: item._id,
-          createdAt: item.createdAt,
-          likes: item.likes,
-          link: item.link,
-          name: item.name,
-          owner: {
-            name: item.owner.name,
-            about: item.owner.about,
-            avatar: item.owner.avatar,
-            _id: item.owner._id,
-            cohort: item.owner.cohort,
-          },
-          _id: item._id,
-        }));
-        setCards(results);
-      })
-  }, [])
+      const results = cardsInfo.map((item) => ({
+        key: item._id,
+        createdAt: item.createdAt,
+        likes: item.likes,
+        link: item.link,
+        name: item.name,
+        owner: {
+          name: item.owner.name,
+          about: item.owner.about,
+          avatar: item.owner.avatar,
+          _id: item.owner._id,
+          cohort: item.owner.cohort,
+        },
+        _id: item._id,
+      }));
+      setCards(results);
+    });
+  }, []);
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
@@ -77,74 +76,84 @@ function App() {
   }
 
   function handleCardLike(card) {
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
-    
-    api.changeLikeCardStatus(card._id, !isLiked)
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+
+    api
+      .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
-        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
       })
       .catch((err) => {
-        console.log(`Произошла ошибка ${err}`)
-      })
+        console.log(`Произошла ошибка ${err}`);
+      });
   }
 
   function handleUpdateUser(userInfo) {
     setIsLoading(true);
-    api.editUserInfo(userInfo)
+    api
+      .editUserInfo(userInfo)
       .then((userInfo) => {
         setCurrentUser(userInfo);
+        closeAllPopups();
       })
       .catch((err) => {
-        console.log(`Произошла ошибка ${err}`)
+        console.log(`Произошла ошибка ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
-      })
+      });
   }
 
   function handleCardDelete(card) {
     setIsLoading(true);
-    api.removeThisCard(card)
+    api
+      .removeThisCard(card)
       .then(() => {
-        setCards(cards.filter((c) => {
-          return c._id !== card._id
-        })
-      )})
+        setCards(
+          cards.filter((c) => {
+            return c._id !== card._id;
+          })
+        );
+        closeAllPopups();
+      })
       .catch((err) => {
-        console.log(`Произошла ошибка ${err}`)
+        console.log(`Произошла ошибка ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
-      })
+      });
   }
-  
+
   function handleUpdateAvatar(avatarInfo) {
     setIsLoading(true);
-    api.editUserAvatar(avatarInfo)
+    api
+      .editUserAvatar(avatarInfo)
       .then((res) => {
-        setCurrentUser(res)
+        setCurrentUser(res);
+        closeAllPopups();
       })
       .catch((err) => {
-        console.log(`Произошла ошибка ${err}`)
+        console.log(`Произошла ошибка ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
-      })
+      });
   }
 
   function handleAddPlaceSubmit(cardInfo) {
     setIsLoading(true);
-    api.createNewCard(cardInfo)
+    api
+      .createNewCard(cardInfo)
       .then((newCard) => {
-        console.log(newCard)
-        setCards([newCard, ...cards])
+        setCards([newCard, ...cards]);
+        closeAllPopups();
       })
       .catch((err) => {
-        console.log(`Произошла ошибка ${err}`)
+        console.log(`Произошла ошибка ${err}`);
       })
       .finally(() => {
         setIsLoading(false);
-      })
+      });
   }
 
   return (
@@ -163,27 +172,27 @@ function App() {
             onCardDelete={handleCardDelete}
           />
           <Footer />
-          <EditProfilePopup 
-            isOpen={isEditProfilePopupOpen} 
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
             onClose={closeAllPopups}
             onUpdateUser={handleUpdateUser}
             isLoading={isLoading}
           />
-          <EditAvatarPopup 
-            isOpen={isEditAvatarPopupOpen}  
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
             onClose={closeAllPopups}
             onUpdateAvatar={handleUpdateAvatar}
             isLoading={isLoading}
           />
           <AddPlacePopup
-            isOpen={isAddPlacePopupOpen}  
+            isOpen={isAddPlacePopupOpen}
             onClose={closeAllPopups}
             onAddPlace={handleAddPlaceSubmit}
             isLoading={isLoading}
           />
           <ConfirmDeletePopup
-            name="confirm" 
-            title="Вы уверены?" 
+            name="confirm"
+            title="Вы уверены?"
             isOpen={isConfirmDeletePopupOpen}
             onClose={closeAllPopups}
             card={selectedCard}
