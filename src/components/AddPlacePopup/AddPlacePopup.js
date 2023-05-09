@@ -26,7 +26,6 @@ function AddPlacePopup(props) {
       title: titleCard,
       link: linkImage,
     })
-    props.onClose();
   }
 
   return (

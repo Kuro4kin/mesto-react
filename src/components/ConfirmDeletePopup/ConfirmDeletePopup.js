@@ -2,7 +2,6 @@ function ConfirmDeletePopup(props) {
   
   function handleConfirmDelete() {
     props.onClick(props.card);
-    props.onClose();
   }
 
   return (
